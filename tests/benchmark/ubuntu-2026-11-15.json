@@ -1,0 +1,201 @@
+{
+  "background_batch": {
+    "chunk_size": 32,
+    "massless_fields": 614356,
+    "models": 1000,
+    "seconds": 110.197985566,
+    "threads": 8
+  },
+  "canonical_export": {
+    "bytes": 31340497,
+    "seconds": 6.019223719
+  },
+  "cpp": {
+    "per_model_seconds": {
+      "non_susy_tachyonic": [
+        0.21493778399963048,
+        0.16469625999889104,
+        0.16449101100079133
+      ],
+      "non_susy_z3": [
+        0.11461378499734565,
+        0.1148453750029148,
+        0.11453054899902781
+      ],
+      "non_susy_z3xz3_wl": [
+        0.31479632899936405,
+        0.3148411969996232,
+        0.315110489998915
+      ],
+      "non_susy_z6_ii": [
+        0.2147127360003651,
+        0.21504029899733723,
+        0.21502211700135376
+      ],
+      "susy_z3": [
+        0.31515302600018913,
+        0.3149935959991126,
+        0.3650335610000184
+      ],
+      "susy_z3xz3_wl": [
+        7.382971565002663,
+        7.382901785000286,
+        7.382900092001364
+      ],
+      "susy_z6_ii": [
+        4.626084059000277,
+        4.575479677001567,
+        4.626460515999497
+      ]
+    },
+    "scope": "fresh C++ process: model/geometry load, native solve/anomalies/cubic candidate checks and JSON write; isolated directory copying and validation excluded",
+    "seconds": [
+      13.183269283999834,
+      13.082798188999732,
+      13.183548336000968
+    ]
+  },
+  "finished_utc": "2026-11-15T19:02:25.546915+00:00",
+  "massless_fields": 4300,
+  "provenance": {
+    "cargo_lock_sha256": "391c7c94aa0044c364ecd3ca9d00d5bcf4b8ccc7c4bc3a610b662ffad2e7720f",
+    "cpp": {
+      "non_susy": {
+        "binary_sha256": "198e7cc9d1a90b1b4803f71637402a643ee9a845447f17e69a78836731aff5c6",
+        "linked_inputs": {
+          "build/src/groupTheory/libgroupTheory.a": "9168d906b635afcb75ad30505fbe6c8c60ad2bd9130f209daf2eb9ad8a94bd01",
+          "build/src/io/libio.a": "4716ccc6586ef0c20454ffecf6bdfaa4ea3b308bdb22afc3e87c207957539187",
+          "build/src/linalg/liblinalg.a": "e2b19f7b83ff03dbf333f27f43ae1ee9a3278a7846d9a706a001dba1397515b2",
+          "build/src/orbifolder/canalysemodel.o": "5d084122cd201d61a5aa2bdee34f8a993a0e116573d27f17793afd7c4e34ffcc",
+          "build/src/orbifolder/cfield.o": "6c69d0ec2a44017c82774783c8690019e78fbb58c75b430cbdcb13121f4111e9",
+          "build/src/orbifolder/cfixedpoint.o": "8a5c845b465a4652c4cca8d7d3ba7d8bf571eb30e9d99991786130c6dff78c80",
+          "build/src/orbifolder/cgaugeinvariance.o": "3578106af6fb32db9dc1260d3e90e40522d80e940a247709fedf69bd90f6e5c6",
+          "build/src/orbifolder/chalfstate.o": "129605a51680b218b878d85dd5ecf141a6d98554dd134d185342c5808a9e2a6f",
+          "build/src/orbifolder/chugeint.o": "ca27e77bf22c6c3fa249a295aaefa3248c4c087677f2463cf3a831440aed0dc2",
+          "build/src/orbifolder/cinequivalentspectra.o": "fc149c3673a2bd3dc815f53b12c404a34d7b2401d34558eab137f30f8f1a6b6a",
+          "build/src/orbifolder/clatticevector.o": "3c4c8c01f6a6de0f0e32c9b53d8bb524113044b34a1809bd4561442f2c300eb6",
+          "build/src/orbifolder/clinalg.o": "e4baa9cd475b51221a05f971920aa997ff8b749e4a4beaec44a318496831d5d7",
+          "build/src/orbifolder/corbifold.o": "57d4075e6d0fc79ac89bca9357352ab627824311cf02d91ecd36108a56239b21",
+          "build/src/orbifolder/corbifoldcore.o": "e8a1761abc185d8ed4cbb9aaaa956ffc7b7118574339af518871b5aa73d261bc",
+          "build/src/orbifolder/corbifoldgroup.o": "73afe36ce6a4aafb554f6c8083359584e0ce8e61090b7140adb200e2c59e83eb",
+          "build/src/orbifolder/corbifoldgroupelement.o": "4331c21b34344f203356fc2e2e3e761b198d5faafaff4420d7a2217ce2187c07",
+          "build/src/orbifolder/coscillator.o": "28fd2847b2362589bb5164aa417a76f981fd95ae8937e1f217c559e427fb7639",
+          "build/src/orbifolder/cprint.o": "38efffca16859f098bcb03938716d67a7685297ba21ea8f767fd6006e162f758",
+          "build/src/orbifolder/cprompt.o": "85de8ceac644ad2e7500a7ec052d698066fcb0ac07569dbb3bc8460ae0760ea8",
+          "build/src/orbifolder/crandommodel.o": "8583ba04c058ce67e00fcd159ae283a024c5411ed5b3debc7e68b61b30f494ae",
+          "build/src/orbifolder/csector.o": "871f583119ee2acfdd9aedc6e60c695061a2602e2b32a3c155ab131c0064b8ee",
+          "build/src/orbifolder/cshiftvector.o": "703d8665003bceb77d196bdd892a2775712b14ecd2faa7ffe3bc137cef65d542",
+          "build/src/orbifolder/cspacegroup.o": "0a741acf98093488176c2242a09fe4cb1f9f8ad0dab9e55594202487bbc0d228",
+          "build/src/orbifolder/cspacegroupelement.o": "3031c40bc3234c793e9b461a52a6ffe5da834fd6b09d0a29de175017645e167a",
+          "build/src/orbifolder/cspectrum.o": "a10bf5f486ae232ad778e0e6e1df5566746ae1d15645eccc0adfac2c502533a4",
+          "build/src/orbifolder/cstate.o": "4d45c63c34d07aa24aedde25217c9779c5e78eb08a0f331a6602ca2744f2fed0",
+          "build/src/orbifolder/ctwist.o": "b2ac5e869076f3bbea2d4b23d4752e03f87da8bcca524f702c59b6781812289a",
+          "build/src/orbifolder/cvector.o": "0c096c96045b966278b212b59001fdac5c3cfccc394a11568c76dba3606e3eef",
+          "build/src/orbifolder/cwilsonline.o": "9605d37a9a63ae02a4864577a425de2a625db928ee7ecfc52de336f6f07efd10",
+          "build/src/orbifolder/cwilsonlines.o": "4d5973023d91eac54f05f4abe204ff19701342d37ac388870a5ed1fee3cfc736",
+          "build/src/orbifolder/globalfunctions.o": "dec5a7d2e2689bc0bdaf2dde7d46f065ebebe9bb3762a21a3027298634d38de3"
+        }
+      },
+      "susy": {
+        "binary_sha256": "42727a00f020ef8eda76bd4c3eee2da1daea0ed54281669505ae5115c2614ce7",
+        "linked_inputs": {
+          "build/src/groupTheory/libgroupTheory.a": "d2d24c81ff54bfdbe4b1cadb007d0dccf8025ce95780a0f0e6396ef4f51a7652",
+          "build/src/io/libio.a": "82fe271ec658cba593725cc7537395e77f9816ea4606795abeec60d07e0ef42c",
+          "build/src/linalg/liblinalg.a": "18698bb6e4a55ac49518f6971cf43f1815ecfe88f51a87aa435a5bdb1154f676",
+          "build/src/orbifolder/canalysemodel.o": "a466aaf87758eb92228ef077fe7890817b8de16811f6701f94c54af781f8c8f5",
+          "build/src/orbifolder/cfield.o": "19dc9be8497e465949db4172656c009ea6033add51c196293930e4802865866e",
+          "build/src/orbifolder/cfixedpoint.o": "ad070f550d12333a363c2a2e855c6dc5c45174f311a0c0ba94554865b6d02a16",
+          "build/src/orbifolder/cgaugeinvariance.o": "30ee5cd9b83b670880200b25636c963bef906044ebc5fd5bfaab5251636e3386",
+          "build/src/orbifolder/chalfstate.o": "7ec7bea5e8daa3008949183c5c48ab561edc85f2b0af7381b50a8a46c047c4dd",
+          "build/src/orbifolder/chugeint.o": "3c823afd54ffce4fe698b230c6759c5c9aaba20e8651c5d99937453eb7afa0a4",
+          "build/src/orbifolder/cinequivalentspectra.o": "1bca3eb2ce5938b7d883f1ea02196b76cf764a9f255b570636ccac6a500bd39b",
+          "build/src/orbifolder/clatticevector.o": "5ac833d58764a09e96f358311e43611249e38b91968791bb94f3e3180cd6bb8b",
+          "build/src/orbifolder/clinalg.o": "aee0455020245802aa02bf1b89dfbb20cd95115a87cefe1243641d677e92f689",
+          "build/src/orbifolder/cmassmatrix.o": "ddc26876fe2e16c0f932ea1fb657c201847fbd4a15769f3f9c3f1838e4154769",
+          "build/src/orbifolder/cmonomial.o": "9a78c1c15725caf53a710c0e7d9a0af43f26b86f6e4dc7c6458c9e2e6847ecce",
+          "build/src/orbifolder/corbifold.o": "ef732bba72945f20c7a109a62c13adfb0ba6a4b91ad3e7f87099a67a5d872e9b",
+          "build/src/orbifolder/corbifoldcore.o": "e33a92d82051464bb1d6626b62f5bb0dcc88920da82add1468481b1198676085",
+          "build/src/orbifolder/corbifoldgroup.o": "0503896271107287df95ab06171a197121bb8bbe7aa4ea0864d8457aed32c048",
+          "build/src/orbifolder/corbifoldgroupelement.o": "dcddcc1251f4e85dc951182acbbd0cece54939a89ec2fb76fb35439a15ffc60d",
+          "build/src/orbifolder/coscillator.o": "990444d8abf9c2e726c994d274ea00376733e5c5184816d7c8495411732a9cf9",
+          "build/src/orbifolder/cprint.o": "c4790f21d4ca6b09f73161538465d97a70d6be3eed70a14a1081c5d86b1c2ad0",
+          "build/src/orbifolder/cprompt.o": "ad0e2b4d8185480bfd99155d42b3cbc6374af7134890790f6ab9231f5f774481",
+          "build/src/orbifolder/crandommodel.o": "fbb447e97327118334cafcded914365bd6f4bc89a6418762218ae10f0469ed74",
+          "build/src/orbifolder/csector.o": "a4cb0ee5dc5c05f66af00fc2279b7e0fff6e8891be453b425e2195610052bb11",
+          "build/src/orbifolder/cshiftvector.o": "1748d9749a52f03cff9e172fc183c73f7c20a0a96d989bb3e4dd9b5ef68107e6",
+          "build/src/orbifolder/cspacegroup.o": "7c8b938be7758fa451feeac9278d3983f229b18a76e95fe6f7dc2a0d44d4860f",
+          "build/src/orbifolder/cspacegroupelement.o": "37c8035fbe380f6a508322acb118d8956e6026bf14bb4cee8c989d36e85c6aa6",
+          "build/src/orbifolder/cspectrum.o": "a1931dcb904de3203f46968be7de65e3f664e3f7b1494a3854c88204dd9b88bb",
+          "build/src/orbifolder/cstate.o": "6b24c59dc1ff82e92972f9dea614429ca9071a110284f53191ed18e53976bfd0",
+          "build/src/orbifolder/ctwist.o": "f815554521a378d923889ca0b75c4a515b174a2b1b796b178e22aaa1af8bf570",
+          "build/src/orbifolder/cvector.o": "0e5766beb26fb5d51c61b95528e4931dedcd2d203473bb3c89a2b179aa1038ea",
+          "build/src/orbifolder/cwilsonline.o": "3548b4bc400dbe7e107fc6b7e93bb81e98236ad9517d4eec0d303044a1923533",
+          "build/src/orbifolder/cwilsonlines.o": "64aadfc5e677bdffa86badf5ded1380983c4997b2faf846ef5ef9a13bfdea8b8",
+          "build/src/orbifolder/cyukawacouplings.o": "bd6a739c8a7592f6c6048461e07cbaf29f5b380733de82f81edd34bd8f823bb9",
+          "build/src/orbifolder/globalfunctions.o": "1abe5a26eca010a55ad43acb8931fd71af255854b8ee55ba0e0b634497db93d7"
+        }
+      }
+    },
+    "cpu": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           48 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  16\nOn-line CPU(s) list:                     0-15\nVendor ID:                               AuthenticAMD\nModel name:                              AMD Ryzen 7 5700U with Radeon Graphics\nCPU family:                              23\nModel:                                   104\nThread(s) per core:                      2\nCore(s) per socket:                      8\nSocket(s):                               1\nStepping:                                1\nCPU(s) scaling MHz:                      62%\nCPU max MHz:                             4372.0000\nCPU min MHz:                             400.0000\nBogoMIPS:                                3593.11\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip rdpid overflow_recov succor smca ibpb_exit_to_user\nVirtualization:                          AMD-V\nL1d cache:                               256 KiB (8 instances)\nL1i cache:                               256 KiB (8 instances)\nL2 cache:                                4 MiB (8 instances)\nL3 cache:                                8 MiB (2 instances)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-15\nVulnerability Gather data sampling:      Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Mitigation; untrained return thunk; SMT enabled with STIBP protection\nVulnerability Spec rstack overflow:      Mitigation; Safe RET\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Retpolines; IBPB conditional; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Not affected\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Mitigation; IBPB before exit to userspace\n",
+    "g++": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "inputs_sha256": "3387e4ab5f58a0ca1c047137ba797b7d423c3fe639efc1eec18ff7abd5d1d7af",
+    "logical_cpus": 16,
+    "platform": "Linux-6.8.0-149-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "runner_sha256": "4aa4645cbee1c7abe5b8407a28834ff1a40cf73bba08275d564d92a6393cbcde",
+    "rust_profile": "release; overflow-checks=true",
+    "rust_sources_sha256": "54272d2d4a7c8b59b2943d5cd5dc12485700fe9d780beda1a07ff52661e9b61a",
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "started_utc": "2026-11-15T18:58:57.595276+00:00"
+  },
+  "python_export_seconds": 9.64212463900185,
+  "returned_highest_weight_values": {
+    "bigint_backend": 0,
+    "total": 68800
+  },
+  "rust": [
+    {
+      "seconds": [
+        3.03139476,
+        3.087580783,
+        2.999420853
+      ],
+      "threads": 0
+    },
+    {
+      "seconds": [
+        3.091743943,
+        3.066867612,
+        3.0248356
+      ],
+      "threads": 1
+    },
+    {
+      "seconds": [
+        1.784429831,
+        1.766548014,
+        1.755679029
+      ],
+      "threads": 2
+    },
+    {
+      "seconds": [
+        1.184381629,
+        1.469049015,
+        1.469223357
+      ],
+      "threads": 4
+    },
+    {
+      "seconds": [
+        1.153642915,
+        1.142300681,
+        1.149156015
+      ],
+      "threads": 8
+    }
+  ],
+  "rust_peak_child_rss_kib": 1193208,
+  "scope": "Rust timings exclude input validation, pool startup and canonical/Python export; no discarded warmup; raw repetitions retained",
+  "tachyon_fields": 12
+}

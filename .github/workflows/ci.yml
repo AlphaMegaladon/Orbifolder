@@ -1,0 +1,31 @@
+name: Exact core and Python API
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  minimum-rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          check-latest: true
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.85.0'
+      - run: cargo check --workspace --all-targets --locked
+  verified-linux-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+          check-latest: true
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install 'maturin[patchelf]>=1.10,<2' pytest jsonschema
+      - run: bash tests/verify_release.sh

@@ -1,0 +1,1382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Orbifolder C++ core oracle fixture v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "variant": {
+      "enum": [
+        "susy",
+        "non_susy"
+      ]
+    },
+    "conventions": {
+      "type": "object",
+      "properties": {
+        "seed": {
+          "const": 0
+        },
+        "multiplets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 12
+        },
+        "factor_mapping": {
+          "type": "string"
+        },
+        "numbers": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "seed",
+        "multiplets",
+        "factor_mapping",
+        "numbers"
+      ],
+      "additionalProperties": false
+    },
+    "math": {
+      "type": "object",
+      "properties": {
+        "rational_arithmetic": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "$ref": "#/$defs/rational"
+            },
+            "b": {
+              "$ref": "#/$defs/rational"
+            },
+            "sum": {
+              "$ref": "#/$defs/rational"
+            },
+            "product": {
+              "$ref": "#/$defs/rational"
+            },
+            "quotient": {
+              "$ref": "#/$defs/rational"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "sum",
+            "product",
+            "quotient"
+          ],
+          "additionalProperties": false
+        },
+        "parent_e8xe8_roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec16"
+          },
+          "minItems": 480,
+          "maxItems": 480
+        },
+        "so8_samples": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "weight": {
+                    "$ref": "#/$defs/vec4"
+                  },
+                  "ns_r_class": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "weight",
+                  "ns_r_class"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "weight": {
+                    "$ref": "#/$defs/vec4"
+                  },
+                  "so8_s_class": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "so8_c_class": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "weight",
+                  "so8_s_class",
+                  "so8_c_class"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "rational_arithmetic",
+        "parent_e8xe8_roots",
+        "so8_samples"
+      ],
+      "additionalProperties": false
+    },
+    "geometry": {
+      "$ref": "#/$defs/geometry"
+    },
+    "orbifold_group": {
+      "$ref": "#/$defs/group"
+    },
+    "gauge_group": {
+      "$ref": "#/$defs/gauge"
+    },
+    "sectors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sector"
+      },
+      "minItems": 1
+    },
+    "spectrum": {
+      "$ref": "#/$defs/spectrum"
+    },
+    "tachyonic_spectrum": {
+      "$ref": "#/$defs/spectrum"
+    },
+    "anomalies": {
+      "$ref": "#/$defs/anomalies"
+    },
+    "susy_analysis": {
+      "$ref": "#/$defs/susy_analysis"
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "massless_states": {
+          "type": "string"
+        },
+        "tachyonic_left_solutions": {
+          "type": "string"
+        },
+        "tachyon_search": {
+          "type": "string"
+        },
+        "anomaly_coefficients": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "massless_states",
+        "tachyonic_left_solutions",
+        "tachyon_search",
+        "anomaly_coefficients"
+      ],
+      "additionalProperties": false
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^(non_)?susy_[a-z0-9_]+$"
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "model_text": {
+          "type": "string"
+        },
+        "model_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "geometry_file": {
+          "type": "string"
+        },
+        "geometry_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "required": [
+        "model_text",
+        "model_sha256",
+        "geometry_file",
+        "geometry_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "legacy_binary_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "probe_binary_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "cpp_sources_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_tree_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "probe_source_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "build_probes_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "generator_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "comparator_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "schema_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "build_environment": {
+          "type": "string"
+        },
+        "python_version": {
+          "type": "string"
+        },
+        "jsonschema_version": {
+          "type": "string"
+        },
+        "linked_inputs": {
+          "type": "object",
+          "minProperties": 4,
+          "additionalProperties": {
+            "$ref": "#/$defs/hash"
+          }
+        }
+      },
+      "required": [
+        "legacy_binary_sha256",
+        "probe_binary_sha256",
+        "cpp_sources_sha256",
+        "source_tree_sha256",
+        "probe_source_sha256",
+        "build_probes_sha256",
+        "generator_sha256",
+        "comparator_sha256",
+        "schema_sha256",
+        "build_environment",
+        "python_version",
+        "jsonschema_version",
+        "linked_inputs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "variant",
+    "conventions",
+    "math",
+    "geometry",
+    "orbifold_group",
+    "gauge_group",
+    "sectors",
+    "spectrum",
+    "tachyonic_spectrum",
+    "anomalies",
+    "susy_analysis",
+    "coverage",
+    "case_id",
+    "input",
+    "provenance"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "rational": {
+      "type": "object",
+      "properties": {
+        "num": {
+          "type": "integer"
+        },
+        "den": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "num",
+        "den"
+      ],
+      "additionalProperties": false
+    },
+    "vec4": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "vec16": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 16,
+      "maxItems": 16
+    },
+    "element": {
+      "type": "object",
+      "properties": {
+        "factors": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "translation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rational"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        }
+      },
+      "required": [
+        "factors",
+        "translation"
+      ],
+      "additionalProperties": false
+    },
+    "excitation": {
+      "type": "object",
+      "properties": {
+        "number_operator": {
+          "type": "number"
+        },
+        "squared_weight_target": {
+          "type": "number"
+        },
+        "oscillators": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "number_operator",
+        "squared_weight_target",
+        "oscillators"
+      ],
+      "additionalProperties": false
+    },
+    "solution": {
+      "type": "object",
+      "properties": {
+        "excitation": {
+          "$ref": "#/$defs/excitation"
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/vec4"
+              },
+              {
+                "$ref": "#/$defs/vec16"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "excitation",
+        "weights"
+      ],
+      "additionalProperties": false
+    },
+    "half": {
+      "type": "object",
+      "properties": {
+        "solution_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "weight_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "eigenphases": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "solution_index",
+        "weight_indices",
+        "eigenphases"
+      ],
+      "additionalProperties": false
+    },
+    "oscillator": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complex_conjugate": {
+          "type": "boolean"
+        },
+        "frequency": {
+          "type": "number"
+        },
+        "number_operator": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "direction",
+        "complex_conjugate",
+        "frequency",
+        "number_operator"
+      ],
+      "additionalProperties": false
+    },
+    "state": {
+      "type": "object",
+      "properties": {
+        "left": {
+          "$ref": "#/$defs/half"
+        },
+        "right": {
+          "$ref": "#/$defs/half"
+        },
+        "left_solution": {
+          "$ref": "#/$defs/solution"
+        },
+        "q_charges": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/vec4"
+            }
+          }
+        },
+        "oscillator_contribution": {
+          "$ref": "#/$defs/vec4"
+        },
+        "gamma_phases": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "field_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "left",
+        "right",
+        "left_solution",
+        "q_charges",
+        "oscillator_contribution",
+        "gamma_phases",
+        "field_indices"
+      ],
+      "additionalProperties": false
+    },
+    "brane": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "constructing_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "element": {
+          "$ref": "#/$defs/element"
+        },
+        "label": {
+          "type": "string"
+        },
+        "left_solutions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/solution"
+          }
+        },
+        "left_movers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/half"
+          }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          }
+        },
+        "tachyonic_states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          }
+        },
+        "excited_tachyonic_states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          }
+        }
+      },
+      "required": [
+        "index",
+        "constructing_index",
+        "element",
+        "label",
+        "left_solutions",
+        "left_movers",
+        "states",
+        "tachyonic_states",
+        "excited_tachyonic_states"
+      ],
+      "additionalProperties": false
+    },
+    "sector": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "factors": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "twist": {
+          "$ref": "#/$defs/vec4"
+        },
+        "a_left": {
+          "type": "number"
+        },
+        "a_right": {
+          "type": "number"
+        },
+        "left_oscillators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/oscillator"
+          }
+        },
+        "right_oscillators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/oscillator"
+          }
+        },
+        "right_solutions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/solution"
+          }
+        },
+        "right_movers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/half"
+          }
+        },
+        "tachyonic_right_solutions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "solution": {
+                "$ref": "#/$defs/solution"
+              },
+              "masses": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            "required": [
+              "solution",
+              "masses"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "tachyonic_right_movers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/half"
+          }
+        },
+        "fixed_branes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/brane"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "index",
+        "factors",
+        "twist",
+        "a_left",
+        "a_right",
+        "left_oscillators",
+        "right_oscillators",
+        "right_solutions",
+        "right_movers",
+        "tachyonic_right_solutions",
+        "tachyonic_right_movers",
+        "fixed_branes"
+      ],
+      "additionalProperties": false
+    },
+    "field": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "multiplet": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_index": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "element": {
+          "$ref": "#/$defs/element"
+        },
+        "weight_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "highest_weights": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "u1_charges": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "q_sh": {
+          "oneOf": [
+            { "$ref": "#/$defs/vec4" },
+            { "type": "null" }
+          ],
+          "description": "Native CField value; null when unpopulated by non-SUSY legacy code. See linked state's q_charges and right solution."
+        },
+        "oscillator_contribution": {
+          "$ref": "#/$defs/vec4"
+        },
+        "gamma_phases": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "numbers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "representations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "type": "integer"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "dimension",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "discrete_r_charges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rational"
+          }
+        },
+        "discrete_non_r_charges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rational"
+          }
+        }
+      },
+      "required": [
+        "index",
+        "multiplet",
+        "source_index",
+        "element",
+        "weight_indices",
+        "highest_weights",
+        "u1_charges",
+        "q_sh",
+        "oscillator_contribution",
+        "gamma_phases",
+        "labels",
+        "numbers",
+        "representations",
+        "discrete_r_charges",
+        "discrete_non_r_charges"
+      ],
+      "additionalProperties": false
+    },
+    "spectrum": {
+      "type": "object",
+      "properties": {
+        "field_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        }
+      },
+      "required": [
+        "field_count",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "gauge": {
+      "type": "object",
+      "properties": {
+        "factors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "algebra": {
+                "type": "string"
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "simple_roots": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/vec16"
+                }
+              }
+            },
+            "required": [
+              "algebra",
+              "rank",
+              "simple_roots"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "u1_generators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec16"
+          }
+        },
+        "basis": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec16"
+          }
+        },
+        "first_u1_anomalous": {
+          "type": "boolean"
+        },
+        "fi_term": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "factors",
+        "u1_generators",
+        "basis",
+        "first_u1_anomalous",
+        "fi_term"
+      ],
+      "additionalProperties": false
+    },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "exact_metric": {
+          "type": "object",
+          "properties": {
+            "origin": { "const": "curated symbolic interpretation; not a native rational C++ metric" },
+            "basis_interpretation": { "enum": ["three_A2", "two_A2_plus_sqrt3_axes"] },
+            "cartesian_component_abs_error_bound": { "const": 4e-11 },
+            "gram_matrix": {
+              "type": "array", "minItems": 6, "maxItems": 6,
+              "items": {
+                "type": "array", "minItems": 6, "maxItems": 6,
+                "items": { "$ref": "#/$defs/rational" }
+              }
+            }
+          },
+          "required": ["origin", "basis_interpretation", "cartesian_component_abs_error_bound", "gram_matrix"],
+          "additionalProperties": false
+        },
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "status": {
+          "const": 2
+        },
+        "lattice_label": {
+          "type": "string"
+        },
+        "torus_basis": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "twists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec4"
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "twist_generators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/element"
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "translation_generators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/element"
+          },
+          "minItems": 6
+        },
+        "constructing_elements": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/element"
+            }
+          }
+        },
+        "centralizers": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/element"
+            }
+          }
+        },
+        "wilson_line_orders": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "wilson_line_relations": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "discrete_symmetries": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "order": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "superpotential_charge": {
+                  "$ref": "#/$defs/rational"
+                },
+                "charge_operator": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/rational"
+                  }
+                },
+                "generator": {
+                  "$ref": "#/$defs/element"
+                }
+              },
+              "required": [
+                "order",
+                "superpotential_charge",
+                "charge_operator",
+                "generator"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "rotation_actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "generator": {
+                "$ref": "#/$defs/element"
+              },
+              "matrix": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/rational"
+                  },
+                  "minItems": 6,
+                  "maxItems": 6
+                },
+                "minItems": 6,
+                "maxItems": 6
+              }
+            },
+            "required": [
+              "generator",
+              "matrix"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "exact_metric",
+        "orders",
+        "status",
+        "lattice_label",
+        "torus_basis",
+        "twists",
+        "twist_generators",
+        "translation_generators",
+        "constructing_elements",
+        "centralizers",
+        "wilson_line_orders",
+        "wilson_line_relations",
+        "discrete_symmetries",
+        "rotation_actions"
+      ],
+      "additionalProperties": false
+    },
+    "orbifold_element": {
+      "type": "object",
+      "properties": {
+        "element": {
+          "$ref": "#/$defs/element"
+        },
+        "shift": {
+          "$ref": "#/$defs/vec16"
+        },
+        "twist": {
+          "$ref": "#/$defs/vec4"
+        }
+      },
+      "required": [
+        "element",
+        "shift",
+        "twist"
+      ],
+      "additionalProperties": false
+    },
+    "group": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "lattice": {
+          "type": "integer"
+        },
+        "supersymmetry": {
+          "type": "integer"
+        },
+        "invariant_supercharges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec4"
+          }
+        },
+        "shifts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec16"
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "wilson_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec16"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "use_freely_acting_wilson_line": {
+          "type": "boolean"
+        },
+        "freely_acting_wilson_line": {
+          "$ref": "#/$defs/vec16"
+        },
+        "loaded_u1_generators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/vec16"
+          }
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/orbifold_element"
+          }
+        },
+        "centralizers": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/orbifold_element"
+            }
+          }
+        },
+        "modular_invariance_status": {
+          "const": 2
+        },
+        "status": {
+          "const": 2
+        },
+        "torsion": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "a": {
+              "$ref": "#/$defs/rational"
+            },
+            "b": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/rational"
+              }
+            },
+            "c": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/rational"
+              }
+            },
+            "d": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/rational"
+                }
+              }
+            }
+          },
+          "required": [
+            "enabled",
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "label",
+        "lattice",
+        "supersymmetry",
+        "invariant_supercharges",
+        "shifts",
+        "wilson_lines",
+        "use_freely_acting_wilson_line",
+        "freely_acting_wilson_line",
+        "loaded_u1_generators",
+        "elements",
+        "centralizers",
+        "modular_invariance_status",
+        "status",
+        "torsion"
+      ],
+      "additionalProperties": false
+    },
+    "anomalies": {
+      "type": "object",
+      "properties": {
+        "check_passed": {
+          "type": "boolean"
+        },
+        "report": {
+          "type": "string"
+        },
+        "gauge_after_check": {
+          "$ref": "#/$defs/gauge"
+        },
+        "coefficients": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "$ref": "#/$defs/rational"
+              }
+            },
+            "required": [
+              "label",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "check_passed",
+        "report",
+        "gauge_after_check",
+        "coefficients"
+      ],
+      "additionalProperties": false
+    },
+    "trial": {
+      "type": "object",
+      "properties": {
+        "field_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "gauge_invariant": {
+          "type": "boolean"
+        },
+        "allowed_couplings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "monomial_exponents": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "monomial_fields": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "u1_charge_sum": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "field_indices",
+        "labels",
+        "gauge_invariant",
+        "allowed_couplings",
+        "monomial_exponents",
+        "monomial_fields",
+        "u1_charge_sum"
+      ],
+      "additionalProperties": false
+    },
+    "susy_analysis": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "const": "not_applicable"
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "const": "computed"
+            },
+            "scope": {
+              "type": "string"
+            },
+            "field_pool": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "minItems": 1,
+              "maxItems": 6
+            },
+            "trials": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/trial"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "status",
+            "scope",
+            "field_pool",
+            "trials"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

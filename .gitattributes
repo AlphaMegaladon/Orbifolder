@@ -1,0 +1,12 @@
+* text=auto
+*.rs text eol=lf
+*.py text eol=lf
+*.pyi text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.cff text eol=lf
+# Frozen legacy model inputs retain their hash-bound trailing blank lines.
+tests/ground_truth/cases/*.txt whitespace=-blank-at-eof

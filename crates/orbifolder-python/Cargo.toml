@@ -1,0 +1,22 @@
+[package]
+name = "orbifolder-python"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "ABI3 Python bindings for the exact orbifolder Rust engine"
+[lib]
+name = "_native"
+crate-type = ["cdylib", "rlib"]
+[features]
+extension-module = ["pyo3/extension-module"]
+[lints]
+workspace = true
+[dependencies]
+orbifolder-core = {path="../orbifolder-core"}
+orbifolder-data = {path="../orbifolder-data"}
+pyo3 = {version="0.27",features=["abi3-py311", "num-bigint"]}
+num-bigint = "0.4.6"
+serde_json = {version="1",features=["arbitrary_precision"]}

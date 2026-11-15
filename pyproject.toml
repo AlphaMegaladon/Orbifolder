@@ -1,0 +1,61 @@
+[build-system]
+requires = ["maturin>=1.10,<2"]
+build-backend = "maturin"
+[project]
+name = "orbifolder"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Exact heterotic orbifold calculations backed by Rust"
+authors = [{ name = "Martin Wimmer" }]
+license = { text = "GPL-3.0-or-later" }
+readme = "README.md"
+keywords = ["string-theory", "heterotic", "orbifold", "exact-arithmetic", "rust", "physics"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Rust",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+[project.urls]
+Homepage = "https://github.com/AlphaMegaladon/orbifolder"
+Repository = "https://github.com/AlphaMegaladon/orbifolder"
+Issues = "https://github.com/AlphaMegaladon/orbifolder/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=8", "jsonschema>=4"]
+dev = ["maturin>=1.10,<2", "patchelf; sys_platform == 'linux'", "pytest>=8", "jsonschema>=4", "mypy>=1.14", "pyright>=1.1.400", "twine>=6", "PyYAML>=6"]
+[tool.maturin]
+manifest-path = "crates/orbifolder-python/Cargo.toml"
+features = ["extension-module"]
+python-source = "python"
+module-name = "orbifolder._native"
+include = [
+    { path = "python/orbifolder/presets/*.json", format = ["wheel", "sdist"] },
+    { path = "python/orbifolder/*.pyi", format = ["wheel", "sdist"] },
+    { path = "python/orbifolder/py.typed", format = ["wheel", "sdist"] },
+    { path = "LICENSE", format = ["wheel", "sdist"] },
+    { path = "THIRD_PARTY_NOTICES.md", format = ["wheel", "sdist"] },
+    { path = "CITATION.cff", format = ["wheel", "sdist"] },
+    { path = "ROADMAP.md", format = "sdist" },
+    { path = "tests/**/*", format = "sdist" },
+    { path = "docs/**/*", format = "sdist" },
+    { path = "Cargo.lock", format = "sdist" },
+]
+exclude = ["legacy_cpp/**", "target/**", ".venv*/**", "dist/**", "**/.build/**", "**/__pycache__/**", "**/*.pyc", "**/*:Zone.Identifier", "**/.pytest_cache/**"]
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
+
+[tool.pyright]
+include = ["tests/typing"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"

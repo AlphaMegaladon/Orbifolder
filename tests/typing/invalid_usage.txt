@@ -1,0 +1,6 @@
+# Both checkers must report these invalid calls; this file is copied to .py
+# by the packaging validation command, never added to normal test collection.
+import orbifolder
+orbifolder.Geometry.from_preset(123)
+orbifolder.Executor(threads="four")
+orbifolder.parse_legacy_models(123)

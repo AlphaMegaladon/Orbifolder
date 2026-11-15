@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "Please cite this software and both predecessor papers when using orbifolder in research."
+type: software
+title: "orbifolder: Exact Rational and Parallel Rust/Python Engine for Heterotic Orbifold String Compactifications"
+authors:
+  - family-names: Wimmer
+    given-names: Martin
+version: 0.1.0
+license: GPL-3.0-or-later
+repository-code: "https://github.com/AlphaMegaladon/orbifolder"
+keywords:
+  - heterotic string theory
+  - orbifold compactifications
+  - exact rational arithmetic
+  - Rust
+  - Python
+references:
+  - type: article
+    title: "The Orbifolder: A Tool to study the Low Energy Effective Theory of Heterotic Orbifolds"
+    authors:
+      - family-names: Nilles
+        given-names: Hans Peter
+      - family-names: Ramos-Sánchez
+        given-names: Saúl
+      - family-names: Vaudrevange
+        given-names: Patrick K. S.
+      - family-names: Wingerter
+        given-names: Akin
+    journal: Computer Physics Communications
+    volume: "183"
+    start: "1363"
+    end: "1380"
+    year: 2012
+    doi: 10.1016/j.cpc.2012.01.026
+    url: https://arxiv.org/abs/1110.5229
+  - type: article
+    title: "The Non-SUSY Orbifolder: a tool to build promising non-supersymmetric string models"
+    authors:
+      - family-names: Escalante-Notario
+        given-names: Enrique
+      - family-names: Perez-Martinez
+        given-names: Ricardo
+      - family-names: Ramos-Sánchez
+        given-names: Saúl
+      - family-names: Vaudrevange
+        given-names: Patrick K. S.
+    year: 2025
+    url: https://arxiv.org/abs/2504.20137
