@@ -111,9 +111,11 @@ der Windows-ARM64-Job verwendet deshalb native ARM64-Interpreter.
 | macOS | Intel x86_64 | `macos-15-intel` | `x86_64-apple-darwin` |
 | macOS | Apple Silicon ARM64 | `macos-15` | `aarch64-apple-darwin` |
 
-Windows ARM64 wurde am 2026-11-16 ergänzt. Der erste erfolgreiche native
-GitHub-Lauf steht noch aus; eine gültige Workflow-Datei allein ist kein
-Nachweis eines funktionierenden Windows-ARM64-Wheels.
+Windows ARM64 wurde am 2026-11-16 ergänzt. Der
+[dritte manuelle Lauf](https://github.com/AlphaMegaladon/Orbifolder/actions/runs/43782095269)
+auf Commit `2e97d4e` bestand Quality, sdist und alle sechs nativen Wheel-Jobs,
+einschließlich Windows ARM64 mit Installationstests unter CPython 3.11 und
+3.14. Publish wurde für diesen Testlauf wie vorgesehen übersprungen.
 Python 3.11 und 3.14 sind im
 [Python-Versionsmanifest](https://github.com/actions/python-versions/blob/main/versions-manifest.json)
 für Windows ARM64 vorhanden. Die

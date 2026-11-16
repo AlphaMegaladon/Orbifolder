@@ -37,8 +37,9 @@ uv add orbifolder
 ```
 
 The release workflow is configured to build ABI3 wheels for Linux (x86_64/aarch64), Windows
-(x86_64/ARM64) and macOS (Intel/Apple Silicon). Windows ARM64 is newly configured
-and still requires a successful native CI run before it is considered verified.
+(x86_64/ARM64) and macOS (Intel/Apple Silicon). All six native builds passed
+[release CI](https://github.com/AlphaMegaladon/Orbifolder/actions/runs/43782095269)
+on 2026-11-16, including installation tests under CPython 3.11 and 3.14.
 Installing a wheel needs no Rust,
 C++ compiler or external geometry files. Building from an sdist requires a
 current stable Rust toolchain and a platform C linker. C++ and the legacy
