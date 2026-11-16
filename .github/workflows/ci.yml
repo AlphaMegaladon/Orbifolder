@@ -4,7 +4,7 @@ permissions:
   contents: read
 jobs:
   minimum-rust:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -16,7 +16,7 @@ jobs:
           toolchain: '1.85.0'
       - run: cargo check --workspace --all-targets --locked
   verified-linux-runtime:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

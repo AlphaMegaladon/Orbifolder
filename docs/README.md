@@ -2,6 +2,8 @@
 
 Für den aktuellen Checkout zuerst diese Dokumente lesen:
 
+- [PyPI-Veröffentlichung und GitHub-Environment](./15_pypi_publishing.md):
+  konkrete Publisher-Felder, Protection Rules, Testlauf und Release-Runner.
 - [Portierungs- und Paketierungsreview vom 2026-11-15](./14_precommit_review.md):
   Funktionsvergleich, aktuelle Prüfungen, Benchmarkgrenzen und erster Commit.
 - [Künftige Erweiterungen](../ROADMAP.md): besprochene nächste Arbeitspakete und

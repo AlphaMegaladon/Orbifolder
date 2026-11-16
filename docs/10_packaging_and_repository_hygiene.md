@@ -100,6 +100,9 @@ unabhängig vom Checkout.
 
 ## GitHub-/PyPI-Release
 
+Aktuelle konkrete Einrichtung und Runner-Korrekturen:
+[PyPI-Veröffentlichung und GitHub-Environment](./15_pypi_publishing.md).
+
 [release.yml](../.github/workflows/release.yml) verwendet
 `PyO3/maturin-action@v1`. Native Runner bauen Linux x86_64/aarch64,
 Windows x86_64 und macOS x86_64/aarch64. Jedes ABI3-Wheel wird installiert und
