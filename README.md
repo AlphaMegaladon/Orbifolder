@@ -37,10 +37,19 @@ uv add orbifolder
 ```
 
 The release workflow is configured to build ABI3 wheels for Linux (x86_64/aarch64), Windows
-(x86_64) and macOS (Intel/Apple Silicon). Installing a wheel needs no Rust,
+(x86_64/ARM64) and macOS (Intel/Apple Silicon). Windows ARM64 is newly configured
+and still requires a successful native CI run before it is considered verified.
+Installing a wheel needs no Rust,
 C++ compiler or external geometry files. Building from an sdist requires a
 current stable Rust toolchain and a platform C linker. C++ and the legacy
 libraries are needed only to rebuild the optional reference programs.
+
+Linux wheels target glibc-based distributions through `manylinux`; Alpine Linux
+(musl), 32-bit systems and other architectures such as RISC-V, POWER and IBM Z
+are outside the current wheel matrix. A source build may be possible where
+Python, Rust and the dependencies support the target, but is not a guarantee
+of support for untested platforms. See the
+[release platform matrix](https://github.com/AlphaMegaladon/Orbifolder/blob/main/docs/15_pypi_publishing.md#plattformen-und-wheel-abdeckung).
 
 ## Quickstart
 

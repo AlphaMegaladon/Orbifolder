@@ -88,3 +88,58 @@ Build-Fehler. CI, Quality, sdist und Publish verwenden jetzt ausdrücklich
 `ubuntu-24.04`, passend zur bereits geprüften Linux-Basis. Rust Stable und
 die neuesten Patchversionen innerhalb der gewählten Python-Reihen werden
 weiterhin separat durch die Toolchain-Actions ausgewählt.
+
+Der [zweite manuelle Lauf](https://github.com/AlphaMegaladon/Orbifolder/actions/runs/43779722809)
+auf Commit `141eac6` bestand anschließend Quality, sdist und alle fünf damals
+konfigurierten Wheel-Jobs, einschließlich beider macOS-Architekturen. Publish
+wurde wie vorgesehen übersprungen. Der Hinweis auf begrenzte macOS-ARM64-
+Kapazität beschreibt mögliche Wartezeiten und verhinderte den Build nicht.
+
+## Plattformen und Wheel-Abdeckung
+
+Die Release-Matrix enthält sechs native Builds. Jeder Job installiert sein
+Wheel und führt die isolierten Python-Tests unter CPython 3.11 und 3.14 aus.
+`setup-python` verwendet standardmäßig die Architektur des jeweiligen Runners;
+der Windows-ARM64-Job verwendet deshalb native ARM64-Interpreter.
+
+| System | Architektur | Runner | Rust-Target |
+| --- | --- | --- | --- |
+| Linux/glibc | x86_64 | `ubuntu-24.04` | `x86_64-unknown-linux-gnu` |
+| Linux/glibc | ARM64 | `ubuntu-24.04-arm` | `aarch64-unknown-linux-gnu` |
+| Windows | x86_64 | `windows-latest` | `x86_64-pc-windows-msvc` |
+| Windows | ARM64 | `windows-11-arm` | `aarch64-pc-windows-msvc` |
+| macOS | Intel x86_64 | `macos-15-intel` | `x86_64-apple-darwin` |
+| macOS | Apple Silicon ARM64 | `macos-15` | `aarch64-apple-darwin` |
+
+Windows ARM64 wurde am 2026-11-16 ergänzt. Der erste erfolgreiche native
+GitHub-Lauf steht noch aus; eine gültige Workflow-Datei allein ist kein
+Nachweis eines funktionierenden Windows-ARM64-Wheels.
+Python 3.11 und 3.14 sind im
+[Python-Versionsmanifest](https://github.com/actions/python-versions/blob/main/versions-manifest.json)
+für Windows ARM64 vorhanden. Die
+[Runner-Dokumentation](https://github.com/actions/runner-images#available-images)
+führt `windows-11-arm` als nativen ARM64-Runner.
+
+Ein Wheel gilt für eine Kombination aus Python-/ABI-Anforderungen,
+Betriebssystem-Kompatibilität und Prozessorarchitektur, nicht nur für die
+Betriebssystemversion des Build-Runners. `manylinux` deckt kompatible
+glibc-basierte Linux-Distributionen ab. macOS-Wheels tragen eine
+Mindestversion; ein Build auf einem neuen macOS bedeutet daher nicht
+automatisch, dass nur dieses macOS unterstützt wird. ABI3 vermeidet separate
+Builds für jede kompatible CPython-Version. Maßgeblich sind die tatsächlichen
+Wheel-Tags und die erfolgreichen Laufzeittests.
+[Wheel-Kompatibilität](https://packaging.python.org/en/latest/specifications/platform-compatibility-tags/).
+
+Diese Matrix ist nicht vollständig für alle Plattformen. Nicht enthalten sind
+beispielsweise Linux mit musl (Alpine), 32-Bit-x86/ARMv7, RISC-V, POWER,
+IBM Z sowie andere Betriebssysteme wie FreeBSD. musl ist eine andere
+Systembibliothek, keine zusätzliche Prozessorarchitektur. Auch andere
+Python-Implementierungen oder Free-Threaded-CPython sind durch diese ABI3-Tests
+nicht abgedeckt. Weitere Ziele benötigen eigene Build- und Laufzeittests.
+
+Fehlt ein kompatibles Wheel, kann `pip` aus dem sdist lokal bauen. Dafür sind
+eine passende Rust-Toolchain, Plattform-Build-Werkzeuge und unterstützte
+Abhängigkeiten erforderlich. Dieser Rückfall garantiert nicht, dass der Build
+auf einer bislang ungetesteten Plattform gelingt. Für den ersten Release sind
+die sechs aufgeführten Ziele der vorgesehene Umfang; zusätzliche Builds können
+bei konkretem Bedarf folgen.
