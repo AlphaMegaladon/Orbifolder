@@ -98,16 +98,33 @@ impl SusySpectrum {
         solved: &SolvedSectors,
         limits: SolverLimits,
     ) -> Result<Computation<Self>, SusyError> {
-        let model = solved.model();
-        if model.theory() != TheorySpec::Susy || model.supercharges().is_empty() {
-            return Ok(Computation::NotApplicable(
-                "Supersymmetric analysis requires preserved supercharges and the SUSY theory",
-            ));
+        if !Self::applicable(solved) {
+            return Ok(Self::unavailable());
         }
-        Ok(Computation::Computed(Self {
-            model: model.clone(),
-            spectrum: calculate_spectrum(solved, limits)?,
-        }))
+        Ok(Self::from_spectrum(
+            solved,
+            &calculate_spectrum(solved, limits)?,
+        ))
+    }
+    fn applicable(solved: &SolvedSectors) -> bool {
+        let model = solved.model();
+        model.theory() == TheorySpec::Susy && !model.supercharges().is_empty()
+    }
+    fn unavailable() -> Computation<Self> {
+        Computation::NotApplicable(
+            "Supersymmetric analysis requires preserved supercharges and the SUSY theory",
+        )
+    }
+    pub(crate) fn from_spectrum(solved: &SolvedSectors, spectrum: &Spectrum) -> Computation<Self> {
+        #[cfg(test)]
+        crate::execution::tests::SUSY_BUILDS.with(|count| count.set(count.get() + 1));
+        if !Self::applicable(solved) {
+            return Self::unavailable();
+        }
+        Computation::Computed(Self {
+            model: solved.model().clone(),
+            spectrum: spectrum.clone(),
+        })
     }
     pub fn model(&self) -> &OrbifoldGroup {
         &self.model

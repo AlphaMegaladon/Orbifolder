@@ -53,6 +53,14 @@ fn all_reference_input_roundtrips_match_text_and_reject_wrong_shapes() {
         bad.schema_version = 2;
         assert!(bad.request(None).is_err());
         let geometry = model.geometry.build().unwrap();
+        let first = model
+            .request_prepared(geometry.clone(), model.embedding().unwrap())
+            .unwrap();
+        let second = rebuilt
+            .request_prepared(geometry.clone(), rebuilt.embedding().unwrap())
+            .unwrap();
+        assert!(std::sync::Arc::ptr_eq(&geometry, &first.geometry));
+        assert!(std::sync::Arc::ptr_eq(&first.geometry, &second.geometry));
         assert!(model.request(Some(geometry.clone())).is_ok());
         let mut changed = model.clone();
         changed.geometry.generators[0].twist[0] = Exact(2.into());

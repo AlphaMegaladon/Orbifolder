@@ -301,12 +301,23 @@ fn local(
 
 /// Validate a parent-lattice embedding. An Arc allows many independent models to
 /// share a certified immutable geometry without global caches or mutations.
-pub fn embed(
-    geometry: impl Into<Arc<Geometry>>,
-    spec: EmbeddingSpec,
-    theory: TheorySpec,
-) -> Result<OrbifoldGroup, ModelError> {
-    let geometry = geometry.into();
+pub fn embedding_orders(geometry: &Geometry) -> [BigInt; 9] {
+    let orders = geometry.space_group().orders();
+    std::array::from_fn(|index| {
+        if index < 3 {
+            BigInt::from(orders[index])
+        } else {
+            geometry.wilson_relations().orders()[index - 3]
+                .clone()
+                .unwrap_or_else(|| BigInt::from(1))
+        }
+    })
+}
+
+pub(super) fn embedding_support(
+    geometry: &Geometry,
+    spec: &EmbeddingSpec,
+) -> Result<(), ModelError> {
     let group = geometry.space_group();
     if spec.lattice == GaugeLattice::D8xD8 {
         return Err(ModelError::UnsupportedGaugeLattice);
@@ -320,38 +331,75 @@ pub fn embed(
     {
         return Err(ModelError::UnsupportedEmbedding);
     }
-    let shift_orders = group.orders().map(BigInt::from);
-    for (i, order) in shift_orders.iter().enumerate() {
-        if !spec
-            .lattice
-            .contains(&spec.shifts[i].scale(&Rational::from(order.clone())))
-        {
-            return Err(ModelError::InvalidEmbeddingOrder);
+    spec.torsion.validate(group)
+}
+
+pub fn validate_embedding(
+    geometry: &Geometry,
+    spec: &EmbeddingSpec,
+) -> Result<Vec<ModularCheck>, ModelError> {
+    validate_embedding_detailed(geometry, spec).map_err(|failure| failure.error)
+}
+
+#[derive(Debug)]
+pub struct EmbeddingFailure {
+    pub error: ModelError,
+    pub slots: Vec<usize>,
+    pub scaled_vector: Option<Box<GaugeVector>>,
+}
+
+pub fn validate_embedding_detailed(
+    geometry: &Geometry,
+    spec: &EmbeddingSpec,
+) -> Result<Vec<ModularCheck>, Box<EmbeddingFailure>> {
+    let failed = |error, slots, vector: Option<GaugeVector>| {
+        Box::new(EmbeddingFailure {
+            error,
+            slots,
+            scaled_vector: vector.map(Box::new),
+        })
+    };
+    embedding_support(geometry, spec).map_err(|error| failed(error, Vec::new(), None))?;
+    let group = geometry.space_group();
+    let orders = embedding_orders(geometry);
+    for (i, order) in orders[..3].iter().enumerate() {
+        let scaled = spec.shifts[i].scale(&Rational::from(order.clone()));
+        if !spec.lattice.contains(&scaled) {
+            return Err(failed(
+                ModelError::InvalidEmbeddingOrder,
+                vec![i],
+                Some(scaled),
+            ));
         }
     }
     let relations = geometry.wilson_relations();
-    let mut orders = shift_orders.to_vec();
-    for (i, order) in relations.orders().iter().enumerate() {
-        let order = match order {
-            Some(n) => n.clone(),
-            None => {
-                if spec.wilson_lines[i] != GaugeVector::zero() {
-                    return Err(ModelError::UnsupportedEmbedding);
-                }
-                BigInt::from(1)
-            }
-        };
-        if !spec
-            .lattice
-            .contains(&spec.wilson_lines[i].scale(&Rational::from(order.clone())))
-        {
-            return Err(ModelError::InvalidEmbeddingOrder);
+    for (i, order) in orders[3..].iter().enumerate() {
+        if relations.orders()[i].is_none() && spec.wilson_lines[i] != GaugeVector::zero() {
+            return Err(failed(
+                ModelError::UnsupportedEmbedding,
+                vec![i + 3],
+                Some(spec.wilson_lines[i].clone()),
+            ));
         }
-        orders.push(order);
+        let scaled = spec.wilson_lines[i].scale(&Rational::from(order.clone()));
+        if !spec.lattice.contains(&scaled) {
+            return Err(failed(
+                ModelError::InvalidEmbeddingOrder,
+                vec![i + 3],
+                Some(scaled),
+            ));
+        }
     }
     for relation in relations.relations() {
-        if !spec.lattice.contains(&wilson(relation, &spec.wilson_lines)) {
-            return Err(ModelError::WilsonRelation);
+        let combined = wilson(relation, &spec.wilson_lines);
+        if !spec.lattice.contains(&combined) {
+            let slots = relation
+                .coordinates()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, coefficient)| (!coefficient.is_zero()).then_some(index + 3))
+                .collect();
+            return Err(failed(ModelError::WilsonRelation, slots, Some(combined)));
         }
     }
     let vectors = spec
@@ -372,11 +420,15 @@ pub fn embed(
             let value = Rational::from(prefactor.clone())
                 * (vectors[i].dot(vectors[j]) - twists[i].dot(&twists[j]));
             if !value.is_even_integer() {
-                return Err(ModelError::ModularInvariance {
-                    left: i,
-                    right: j,
-                    value,
-                });
+                return Err(failed(
+                    ModelError::ModularInvariance {
+                        left: i,
+                        right: j,
+                        value,
+                    },
+                    vec![i, j],
+                    None,
+                ));
             }
             checks.push(ModularCheck {
                 left: i,
@@ -386,7 +438,17 @@ pub fn embed(
             });
         }
     }
-    spec.torsion.validate(group)?;
+    Ok(checks)
+}
+
+pub fn embed(
+    geometry: impl Into<Arc<Geometry>>,
+    spec: EmbeddingSpec,
+    theory: TheorySpec,
+) -> Result<OrbifoldGroup, ModelError> {
+    let geometry = geometry.into();
+    let checks = validate_embedding(&geometry, &spec)?;
+    let group = geometry.space_group();
     let mut elements = Vec::new();
     let mut centralizers = Vec::new();
     for sector in geometry.sectors() {
@@ -401,7 +463,11 @@ pub fn embed(
             );
         }
     }
-    let supercharges = invariant_supercharges(&twists[..3]);
+    let twists = group
+        .generators()
+        .each_ref()
+        .map(|generator| generator.twist.clone());
+    let supercharges = invariant_supercharges(&twists);
     // A validated object is the status proof; no mutable CheckStatus flags.
     Ok(OrbifoldGroup {
         geometry,

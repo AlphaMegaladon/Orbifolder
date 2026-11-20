@@ -384,6 +384,7 @@ fn verify_report(
         let bad =
             orbifolder_core::anomalies::analyze_anomalies(&reduced, Default::default()).unwrap();
         assert!(!bad.report().is_anomaly_free());
+        assert!(bad.report().has_failed_checks());
         assert!(bad.report().checks().iter().any(|c| matches!(
             c.kind(),
             AnomalyCheck::GaugeCubic { .. }

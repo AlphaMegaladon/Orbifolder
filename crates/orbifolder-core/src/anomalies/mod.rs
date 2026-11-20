@@ -7,6 +7,7 @@ use crate::math_core::MathError;
 use crate::physics_engine::PhysicsError;
 pub use basis::{BasisRotation, canonical_u1_basis};
 pub use indices::{RepresentationIndices, representation_indices};
+pub(crate) use report::analyze_spectrum_report;
 pub use report::{
     AnomalyAnalysis, AnomalyCheck, AnomalyOptions, AnomalyReport, CheckResult, FiData,
     analyze_anomalies, analyze_matter,

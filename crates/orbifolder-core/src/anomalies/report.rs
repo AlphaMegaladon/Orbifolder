@@ -107,6 +107,11 @@ impl AnomalyReport {
     pub fn is_anomaly_free(&self) -> bool {
         self.anomaly_free
     }
+    pub fn has_failed_checks(&self) -> bool {
+        self.checks
+            .iter()
+            .any(|check| matches!(check.status(), Computation::Computed(false)))
+    }
 }
 #[derive(Clone, Debug)]
 pub struct AnomalyAnalysis {
@@ -114,6 +119,15 @@ pub struct AnomalyAnalysis {
     spectrum: Spectrum,
 }
 impl AnomalyAnalysis {
+    pub(crate) fn from_report(
+        spectrum: &Spectrum,
+        report: AnomalyReport,
+    ) -> Result<Self, AnomalyError> {
+        #[cfg(test)]
+        crate::execution::tests::CANONICAL_BUILDS.with(|count| count.set(count.get() + 1));
+        let spectrum = spectrum.rebased(report.rotation.generators().to_vec())?;
+        Ok(Self { report, spectrum })
+    }
     pub fn report(&self) -> &AnomalyReport {
         &self.report
     }
@@ -125,6 +139,13 @@ pub fn analyze_anomalies(
     spectrum: &Spectrum,
     options: AnomalyOptions,
 ) -> Result<AnomalyAnalysis, AnomalyError> {
+    AnomalyAnalysis::from_report(spectrum, analyze_spectrum_report(spectrum, options)?)
+}
+
+pub(crate) fn analyze_spectrum_report(
+    spectrum: &Spectrum,
+    options: AnomalyOptions,
+) -> Result<AnomalyReport, AnomalyError> {
     // The spectrum contains CPT partners explicitly. Choose one independent
     // left-handed representative per pair, matching native CheckAnomaly.
     let mut matter = Vec::new();
@@ -149,18 +170,13 @@ pub fn analyze_anomalies(
             )?);
         }
     }
-    let report = analyze_matter(
+    analyze_matter(
         spectrum.basis().root_system(),
         spectrum.basis().u1_generators(),
         &matter,
         spectrum.theory(),
         options,
-    )?;
-    let rebased = spectrum.rebased(report.rotation.generators().to_vec())?;
-    Ok(AnomalyAnalysis {
-        report,
-        spectrum: rebased,
-    })
+    )
 }
 pub fn analyze_matter(
     system: &RootSystem<16>,

@@ -25,6 +25,13 @@ impl Rational {
     pub const ZERO: Self = Self(Repr::Small(0, 1));
     pub const ONE: Self = Self(Repr::Small(1, 1));
 
+    pub fn i64_parts(&self) -> Option<(i64, i64)> {
+        match self.0 {
+            Repr::Small(num, den) => Some((i64::try_from(num).ok()?, i64::try_from(den).ok()?)),
+            Repr::Big(_) => None,
+        }
+    }
+
     pub fn new(numerator: i128, denominator: i128) -> Result<Self, MathError> {
         if denominator == 0 {
             return Err(MathError::ZeroDenominator);

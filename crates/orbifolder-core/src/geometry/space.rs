@@ -610,6 +610,9 @@ pub struct WilsonRelations {
     orders: [Option<BigInt>; 6],
     aliases: Vec<Vec<usize>>,
     relations: Vec<TorusVector>,
+    quotient_coordinates: Matrix,
+    quotient_basis: Matrix,
+    quotient_orders: [Option<BigInt>; 6],
 }
 impl WilsonRelations {
     fn new(group: &SpaceGroup) -> Result<Self, ModelError> {
@@ -655,6 +658,11 @@ impl WilsonRelations {
             orders,
             aliases,
             relations,
+            quotient_basis: smith.left.inverse()?,
+            quotient_coordinates: smith.left,
+            quotient_orders: std::array::from_fn(|index| {
+                (index < smith.rank).then(|| smith.diagonal[index].clone())
+            }),
         })
     }
     pub fn orders(&self) -> &[Option<BigInt>; 6] {
@@ -666,6 +674,15 @@ impl WilsonRelations {
     pub fn relations(&self) -> &[TorusVector] {
         &self.relations
     }
+    pub fn quotient_coordinates(&self) -> &Matrix {
+        &self.quotient_coordinates
+    }
+    pub fn quotient_basis(&self) -> &Matrix {
+        &self.quotient_basis
+    }
+    pub fn quotient_orders(&self) -> &[Option<BigInt>; 6] {
+        &self.quotient_orders
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -674,8 +691,19 @@ pub struct Geometry {
     sectors: Vec<Sector>,
     wilson: WilsonRelations,
 }
+#[cfg(feature = "test-geometry-build-count")]
+static BUILD_COUNT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+
 impl Geometry {
+    #[cfg(feature = "test-geometry-build-count")]
+    #[doc(hidden)]
+    pub fn test_build_count() -> usize {
+        BUILD_COUNT.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
     pub fn build(spec: GeometrySpec) -> Result<Self, ModelError> {
+        #[cfg(feature = "test-geometry-build-count")]
+        BUILD_COUNT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let space = SpaceGroup::new(spec.gram, spec.generators, spec.limits)?;
         if spec
             .representatives

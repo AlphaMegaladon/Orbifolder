@@ -15,6 +15,7 @@ pub use states::{
     BraneStates, HalfState, ProjectedState, SectorKinematics, SectorStates, SolvedSectors,
     TachyonSearch, solve_kinematics, solve_sectors,
 };
+pub(crate) use states::{finish_prefiltered, tachyon_prefilter};
 
 use crate::{geometry::ModelError, math_core::MathError};
 

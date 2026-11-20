@@ -2,9 +2,9 @@
 from fractions import Fraction
 from pathlib import Path as _Path
 from . import _native
-from ._native import BatchItem, Executor, Field, Geometry, InputError, Model, ModelError, Result, ExecutionError, __version__
+from ._native import BatchItem, CompactSpectrum, ComputeOptions, Executor, Field, FilteredResult, Geometry, InputError, Model, ModelError, ModelRequest, PrefixMasker, Result, ExecutionError, __version__
 
-__all__ = ["BatchItem", "Executor", "Field", "Geometry", "InputError", "Model", "ModelError", "Result", "ExecutionError", "exact_data", "parse_legacy_models", "load_legacy_file", "__version__"]
+__all__ = ["BatchItem", "CompactSpectrum", "ComputeOptions", "Executor", "Field", "FilteredResult", "Geometry", "InputError", "Model", "ModelError", "ModelRequest", "PrefixMasker", "Result", "ExecutionError", "exact_data", "parse_legacy_models", "load_legacy_file", "__version__"]
 
 
 def parse_legacy_models(text, geometry="Z3", *, theory_name=None, rules=None):

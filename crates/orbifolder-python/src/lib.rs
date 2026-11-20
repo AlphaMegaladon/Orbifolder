@@ -2,7 +2,7 @@
 use num_bigint::BigInt;
 use orbifolder_core::{
     analysis::Computation,
-    execution::{self, Executor, ModelRequest, ModelResult},
+    execution::{self, ComputeOptions, Executor, ModelRequest, ModelResult, Outcome},
     physics_engine::TachyonSearch,
     susy::{self, AnalysisLimits, Monomial},
 };
@@ -11,10 +11,11 @@ use pyo3::{
     IntoPyObjectExt,
     exceptions::{PyRuntimeError, PyTypeError, PyValueError},
     prelude::*,
-    types::{PyBool, PyDict, PyInt, PyList, PyString, PyTuple},
+    types::{PyBool, PyDict, PyInt, PyList, PySequence, PyString, PyTuple},
 };
 use serde_json::{Value, json};
 use std::sync::Arc;
+mod scan;
 pyo3::create_exception!(_native, InputError, PyValueError);
 pyo3::create_exception!(_native, ModelError, PyValueError);
 pyo3::create_exception!(_native, ExecutionError, PyRuntimeError);
@@ -75,11 +76,18 @@ fn value_output(py: Python<'_>, v: &Value) -> PyResult<Py<PyAny>> {
         Value::Null => Ok(py.None()),
         Value::Bool(b) => b.into_py_any(py),
         Value::String(s) => s.into_py_any(py),
-        Value::Number(n) => n
-            .to_string()
-            .parse::<BigInt>()
-            .map_err(input_error)?
-            .into_py_any(py),
+        Value::Number(n) => {
+            if let Some(value) = n.as_i64() {
+                value.into_py_any(py)
+            } else if let Some(value) = n.as_u64() {
+                value.into_py_any(py)
+            } else {
+                n.to_string()
+                    .parse::<BigInt>()
+                    .map_err(input_error)?
+                    .into_py_any(py)
+            }
+        }
         Value::Array(a) => {
             let list = PyList::empty(py);
             for v in a {
@@ -114,15 +122,28 @@ struct PyGeometry {
 #[pymethods]
 impl PyGeometry {
     #[staticmethod]
-    fn from_data(py: Python<'_>, data: &Bound<'_, PyAny>) -> PyResult<Self> {
+    #[pyo3(signature=(data,*,theory_name="susy",rules=None))]
+    fn from_data(
+        py: Python<'_>,
+        data: &Bound<'_, PyAny>,
+        theory_name: &str,
+        rules: Option<&Bound<'_, PyAny>>,
+    ) -> PyResult<Self> {
         let data: GeometryData =
             serde_json::from_str(&json_input(py, data)?).map_err(input_error)?;
+        let theory = theory(theory_name)?;
+        let rules = rules
+            .map(|value| {
+                serde_json::from_str::<Vec<RuleData>>(&json_input(py, value)?).map_err(input_error)
+            })
+            .transpose()?
+            .unwrap_or_default();
         let geometry = py.detach(|| data.build()).map_err(input_error)?;
         Ok(Self {
             data,
             geometry,
-            theory: TheoryData::Susy,
-            rules: Vec::new(),
+            theory,
+            rules,
         })
     }
     #[staticmethod]
@@ -256,16 +277,23 @@ impl PyModel {
         })
     }
     #[staticmethod]
-    #[pyo3(signature=(text,geometry,theory_name="susy",rules=None))]
+    #[pyo3(signature=(text,geometry,theory_name=None,rules=None))]
     fn from_text(
         py: Python<'_>,
         text: &str,
         geometry: &PyGeometry,
-        theory_name: &str,
+        theory_name: Option<&str>,
         rules: Option<&Bound<'_, PyAny>>,
     ) -> PyResult<Self> {
-        let mut data = ModelData::from_text(text, geometry.data.clone(), theory(theory_name)?)
-            .map_err(input_error)?;
+        let mut data = ModelData::from_text(
+            text,
+            geometry.data.clone(),
+            theory_name
+                .map(theory)
+                .transpose()?
+                .unwrap_or(geometry.theory),
+        )
+        .map_err(input_error)?;
         if let Some(rules) = rules {
             data.rules = serde_json::from_str::<Vec<RuleData>>(&json_input(py, rules)?)
                 .map_err(input_error)?;
@@ -287,30 +315,60 @@ impl PyModel {
     fn label(&self) -> &str {
         &self.data.label
     }
-    #[pyo3(signature=(*,anomalies=true,search_nodes=10_000_000,solutions=1_000_000,tachyon_search="complete"))]
+    #[pyo3(signature=(*,options=None,anomalies=None,search_nodes=None,solutions=None,tachyon_search=None))]
+    #[allow(clippy::too_many_arguments)]
     fn compute(
         &self,
         py: Python<'_>,
-        anomalies: bool,
-        search_nodes: usize,
-        solutions: usize,
-        tachyon_search: &str,
-    ) -> PyResult<PyModelResult> {
+        options: Option<&scan::PyComputeOptions>,
+        anomalies: Option<bool>,
+        search_nodes: Option<usize>,
+        solutions: Option<usize>,
+        tachyon_search: Option<&str>,
+    ) -> PyResult<Py<PyAny>> {
         let mut request = (*self.request).clone();
-        request.options.anomalies = anomalies;
-        request.options.limits.search_nodes = search_nodes;
-        request.options.limits.solutions = solutions;
-        request.options.tachyons = match tachyon_search {
-            "complete" => TachyonSearch::Complete,
-            "legacy" => TachyonSearch::LegacyWindow,
-            _ => return Err(input_error("Unknown tachyon search profile")),
-        };
+        if let Some(options) = options {
+            if anomalies.is_some()
+                || search_nodes.is_some()
+                || solutions.is_some()
+                || tachyon_search.is_some()
+            {
+                return Err(input_error("pass options or legacy keywords, not both"));
+            }
+            request.options = options.inner.clone();
+        } else {
+            if let Some(value) = anomalies {
+                request.options.anomalies = value;
+            }
+            if let Some(value) = search_nodes {
+                request.options.limits.search_nodes = value;
+            }
+            if let Some(value) = solutions {
+                request.options.limits.solutions = value;
+            }
+            if let Some(value) = tachyon_search {
+                request.options.tachyons = scan::tachyon_mode(value)?;
+            }
+        }
         let result = py
-            .detach(|| execution::compute(&request))
-            .map_err(|e| core_error(py, e))?;
-        Ok(PyModelResult {
-            inner: Arc::new(result),
-        })
+            .detach(|| execution::evaluate(&request))
+            .map_err(|failure| scan::scan_exception(py, &failure, options.is_none()))?;
+        match result {
+            Outcome::Complete(result) => Ok(Py::new(
+                py,
+                PyModelResult {
+                    inner: Arc::from(result),
+                },
+            )?
+            .into_any()),
+            Outcome::Filtered(result) => Ok(Py::new(
+                py,
+                scan::PyFilteredResult {
+                    data: scan::filtered_data(&result),
+                },
+            )?
+            .into_any()),
+        }
     }
 }
 #[pyclass(name = "Result", frozen)]
@@ -443,6 +501,7 @@ struct PyBatchItem {
     index: usize,
     value: Option<Arc<ModelResult>>,
     error: Option<Value>,
+    filtered: Option<Value>,
 }
 #[pymethods]
 impl PyBatchItem {
@@ -455,6 +514,20 @@ impl PyBatchItem {
         self.value.is_some()
     }
     #[getter]
+    fn status(&self) -> &'static str {
+        if self.ok() {
+            "ok"
+        } else if self.filtered.is_some() {
+            "filtered"
+        } else {
+            "error"
+        }
+    }
+    #[getter]
+    fn filtered(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        value_output(py, self.filtered.as_ref().unwrap_or(&Value::Null))
+    }
+    #[getter]
     fn value(&self) -> Option<PyModelResult> {
         self.value.as_ref().map(|r| PyModelResult {
             inner: Arc::clone(r),
@@ -465,7 +538,11 @@ impl PyBatchItem {
         value_output(py, self.error.as_ref().unwrap_or(&Value::Null))
     }
     fn to_json(&self, py: Python<'_>) -> String {
-        py.detach(||json!({"index":self.index,"status":if self.ok(){"ok"}else{"error"},"result":self.value.as_ref().map(|r|orbifolder_data::result(r)),"error":self.error}).to_string())
+        py.detach(|| {
+            let mut value = json!({"index":self.index,"status":self.status(),"result":self.value.as_ref().map(|r|orbifolder_data::result(r)),"error":self.error});
+            if let Some(filtered) = &self.filtered { value["filtered"] = filtered.clone(); }
+            value.to_string()
+        })
     }
     fn to_data(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         json_output(py, &self.to_json(py))
@@ -484,11 +561,13 @@ fn batch_results(results: Vec<Result<ModelResult, execution::ComputeError>>) -> 
                 index,
                 value: Some(Arc::new(r)),
                 error: None,
+                filtered: None,
             },
             Err(e) => PyBatchItem {
                 index,
                 value: None,
                 error: Some(orbifolder_data::error(&e)),
+                filtered: None,
             },
         })
         .collect()
@@ -516,24 +595,64 @@ impl PyExecutor {
     fn threads(&self) -> usize {
         self.inner.threads()
     }
-    fn compute_many(&self, py: Python<'_>, models: Vec<Py<PyModel>>) -> Vec<PyBatchItem> {
-        let requests = models
-            .iter()
-            .map(|m| (*m.borrow(py).request).clone())
-            .collect::<Vec<_>>();
-        batch_results(py.detach(|| self.inner.compute_many(&requests)))
+    #[pyo3(signature=(models,*,options=None))]
+    fn compute_many(
+        &self,
+        py: Python<'_>,
+        models: Vec<Py<PyAny>>,
+        options: Option<&scan::PyComputeOptions>,
+    ) -> Vec<PyBatchItem> {
+        let requests = scan::requests(py, models, options);
+        py.detach(|| {
+            self.inner
+                .map(&requests, |request| scan::evaluate_item(request, Arc::from))
+        })
+        .into_iter()
+        .enumerate()
+        .map(|(index, item)| PyBatchItem {
+            index,
+            value: item.value,
+            error: item.error,
+            filtered: item.filtered,
+        })
+        .collect()
     }
-    fn compute_summaries(&self, py: Python<'_>, models: Vec<Py<PyModel>>) -> PyResult<Py<PyAny>> {
-        let requests = models
-            .iter()
-            .map(|m| (*m.borrow(py).request).clone())
-            .collect::<Vec<_>>();
-        let values = py.detach(|| summary_results(&self.inner, &requests));
-        value_output(py, &Value::Array(values))
+    #[pyo3(signature=(models,*,options=None))]
+    fn compute_summaries(
+        &self,
+        py: Python<'_>,
+        models: Vec<Py<PyAny>>,
+        options: Option<&scan::PyComputeOptions>,
+    ) -> PyResult<Py<PyAny>> {
+        scan::project_batch(
+            py,
+            &self.inner,
+            models,
+            options,
+            "summary",
+            orbifolder_data::summary,
+        )
+    }
+    #[pyo3(signature=(items,*,options=None))]
+    fn compute_compact(
+        &self,
+        py: Python<'_>,
+        items: Vec<Py<PyAny>>,
+        options: Option<&scan::PyComputeOptions>,
+    ) -> PyResult<Py<PyAny>> {
+        scan::project_batch(
+            py,
+            &self.inner,
+            items,
+            options,
+            "compact",
+            orbifolder_data::compact_spectrum,
+        )
     }
 }
 #[pymodule]
-fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    scan::register(m)?;
     m.add_function(wrap_pyfunction!(parse_legacy_models, m)?)?;
     m.add_class::<PyGeometry>()?;
     m.add_class::<PyModel>()?;

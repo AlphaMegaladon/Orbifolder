@@ -2,11 +2,14 @@
 mod character;
 mod embedding;
 mod integer;
+mod prefix;
 mod space;
 pub use embedding::{
-    DiscreteTorsion, EmbeddingSpec, LocalElement, ModularCheck, OrbifoldGroup, TheorySpec,
-    TorsionPolicy, embed, invariant_supercharges,
+    DiscreteTorsion, EmbeddingFailure, EmbeddingSpec, LocalElement, ModularCheck, OrbifoldGroup,
+    TheorySpec, TorsionPolicy, embed, embedding_orders, invariant_supercharges, validate_embedding,
+    validate_embedding_detailed,
 };
+pub use prefix::{PrefixError, PrefixMasker, PrefixSpec};
 pub use space::{
     Centralizer, ElementSpec, FixedBrane, FixedLocus, GeneratorSpec, Geometry, GeometrySpec,
     Limits, Sector, SpaceGroup, SpaceGroupElement, WilsonRelations,

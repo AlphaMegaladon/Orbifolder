@@ -1,6 +1,6 @@
 [package]
 name = "orbifolder-core"
-version = "0.1.0"
+version = "0.2.0"
 edition.workspace = true
 rust-version.workspace = true
 authors.workspace = true
@@ -10,6 +10,10 @@ description = "Exact, immutable mathematical primitives for heterotic orbifolds"
 
 [lints]
 workspace = true
+
+[features]
+# Enabled by the bindings test binary to count builds across Rayon workers.
+test-geometry-build-count = []
 
 [dependencies]
 num-bigint = "0.4.6"

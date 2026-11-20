@@ -15,6 +15,7 @@ pub enum TachyonSearch {
     LegacyWindow,
     #[default]
     Complete,
+    Off,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -359,6 +360,33 @@ pub fn solve_sectors(
     search: TachyonSearch,
     limits: SolverLimits,
 ) -> Result<SolvedSectors, PhysicsError> {
+    Ok(solve_pass(model, search, limits, None, false)?.0)
+}
+
+pub(crate) fn tachyon_prefilter(
+    model: &OrbifoldGroup,
+    search: TachyonSearch,
+    limits: SolverLimits,
+) -> Result<Result<SolvedSectors, Rational>, PhysicsError> {
+    let (solved, mass) = solve_pass(model, search, limits, None, true)?;
+    Ok(mass.map_or(Ok(solved), Err))
+}
+
+pub(crate) fn finish_prefiltered(
+    model: &OrbifoldGroup,
+    limits: SolverLimits,
+    tachyons: SolvedSectors,
+) -> Result<SolvedSectors, PhysicsError> {
+    Ok(solve_pass(model, TachyonSearch::Off, limits, Some(tachyons), false)?.0)
+}
+
+fn solve_pass(
+    model: &OrbifoldGroup,
+    search: TachyonSearch,
+    limits: SolverLimits,
+    cached: Option<SolvedSectors>,
+    tachyon_only: bool,
+) -> Result<(SolvedSectors, Option<Rational>), PhysicsError> {
     let space = model.geometry().space_group();
     let twists = space.generators().each_ref().map(|g| g.twist.clone());
     let mut gamma = Vec::new();
@@ -381,18 +409,27 @@ pub fn solve_sectors(
     let mut sectors = Vec::new();
     let mut cache = ShellCache::new();
     let mut flat = 0;
+    let mut cached = cached.map(|data| data.sectors.into_iter());
     for sector in model.geometry().sectors() {
         let twist = (0..3).fold(RightWeight::zero(), |s, i| {
             s.add(&twists[i].scale(&Rational::from(i128::from(sector.factors()[i]))))
         });
-        let kinematics = solve_kinematics(
+        let mut kinematics = solve_kinematics_pass(
             sector.factors(),
             twist,
             &twists,
             model.theory(),
             search,
             limits,
+            !tachyon_only,
         )?;
+        let mut cached_branes = cached.as_mut().map(|data| {
+            let previous = data.next().expect("same geometry");
+            kinematics.tachyon_shells = previous.kinematics.tachyon_shells;
+            kinematics.tachyon_masses = previous.kinematics.tachyon_masses;
+            kinematics.tachyon_movers = previous.kinematics.tachyon_movers;
+            previous.branes.into_iter()
+        });
         let modes = kinematics.modes();
         let right_movers = kinematics.right_movers();
         let tachyon_movers = kinematics.tachyon_movers();
@@ -401,13 +438,17 @@ pub fn solve_sectors(
         for _brane in sector.fixed_branes() {
             let g = &model.elements()[flat];
             let centralizer = &model.centralizers()[flat];
-            let left_shells = build_left_shells(
-                g.shift(),
-                modes.excitations(Mover::Left, &Rational::ZERO, limits)?,
-                model,
-                &mut cache,
-                limits,
-            )?;
+            let left_shells = if tachyon_only {
+                Vec::new()
+            } else {
+                build_left_shells(
+                    g.shift(),
+                    modes.excitations(Mover::Left, &Rational::ZERO, limits)?,
+                    model,
+                    &mut cache,
+                    limits,
+                )?
+            };
             let left_movers =
                 build_left_movers(&left_shells, modes, g, centralizer, &gamma, model)?;
             let states = project(
@@ -421,30 +462,46 @@ pub fn solve_sectors(
             );
             let mut tachyons = Vec::new();
             let mut tachyon_left = Vec::new();
-            for (ti, mass) in tachyon_masses.iter().enumerate() {
-                let shells = build_left_shells(
-                    g.shift(),
-                    modes.excitations(Mover::Left, mass, limits)?,
-                    model,
-                    &mut cache,
-                    limits,
-                )?;
-                let movers = build_left_movers(&shells, modes, g, centralizer, &gamma, model)?;
-                let right = tachyon_movers
-                    .iter()
-                    .filter(|r| r.shell == ti)
-                    .cloned()
-                    .collect::<Vec<_>>();
-                tachyons.extend(project(
-                    &movers,
-                    &right,
-                    &shells,
-                    modes,
-                    centralizer,
-                    &gamma,
-                    mass,
-                ));
-                tachyon_left.push(shells);
+            if let Some(cached_branes) = &mut cached_branes {
+                let previous = cached_branes.next().expect("same geometry");
+                tachyons = previous.tachyons;
+                tachyon_left = previous.tachyon_shells;
+            } else {
+                for (ti, mass) in tachyon_masses.iter().enumerate() {
+                    let shells = build_left_shells(
+                        g.shift(),
+                        modes.excitations(Mover::Left, mass, limits)?,
+                        model,
+                        &mut cache,
+                        limits,
+                    )?;
+                    let movers = build_left_movers(&shells, modes, g, centralizer, &gamma, model)?;
+                    let right = tachyon_movers
+                        .iter()
+                        .filter(|r| r.shell == ti)
+                        .cloned()
+                        .collect::<Vec<_>>();
+                    tachyons.extend(project(
+                        &movers,
+                        &right,
+                        &shells,
+                        modes,
+                        centralizer,
+                        &gamma,
+                        mass,
+                    ));
+                    if tachyon_only && !tachyons.is_empty() {
+                        return Ok((
+                            SolvedSectors {
+                                model: model.clone(),
+                                sectors,
+                                gamma_generators: gamma,
+                            },
+                            Some(mass.clone()),
+                        ));
+                    }
+                    tachyon_left.push(shells);
+                }
             }
             branes.push(BraneStates {
                 element: g.element().clone(),
@@ -458,11 +515,14 @@ pub fn solve_sectors(
         }
         sectors.push(SectorStates { kinematics, branes });
     }
-    Ok(SolvedSectors {
-        model: model.clone(),
-        sectors,
-        gamma_generators: gamma,
-    })
+    Ok((
+        SolvedSectors {
+            model: model.clone(),
+            sectors,
+            gamma_generators: gamma,
+        },
+        None,
+    ))
 }
 
 /// Solve local right-moving kinematics without a gauge embedding or projection.
@@ -474,19 +534,34 @@ pub fn solve_kinematics(
     search: TachyonSearch,
     limits: SolverLimits,
 ) -> Result<SectorKinematics, PhysicsError> {
+    solve_kinematics_pass(factors, twist, twists, theory, search, limits, true)
+}
+
+fn solve_kinematics_pass(
+    factors: [u32; 3],
+    twist: RightWeight,
+    twists: &[RightWeight; 3],
+    theory: TheorySpec,
+    search: TachyonSearch,
+    limits: SolverLimits,
+    massless: bool,
+) -> Result<SectorKinematics, PhysicsError> {
     let modes = SectorModes::new(&twist, twists, factors, theory);
     let mut right_shells = Vec::new();
     let mut tachyon_shells = Vec::new();
     let mut tachyon_masses = Vec::new();
     for excitation in modes.excitations(Mover::Right, &Rational::ZERO, limits)? {
-        let weights = enumerate_shell(&twist, excitation.target(), ShellLattice::RightSo8, limits)?;
-        if !weights.is_empty() {
-            right_shells.push(MassShell {
-                excitation: excitation.clone(),
-                weights,
-            });
+        if massless {
+            let weights =
+                enumerate_shell(&twist, excitation.target(), ShellLattice::RightSo8, limits)?;
+            if !weights.is_empty() {
+                right_shells.push(MassShell {
+                    excitation: excitation.clone(),
+                    weights,
+                });
+            }
         }
-        if theory == TheorySpec::NonSusy {
+        if theory == TheorySpec::NonSusy && search != TachyonSearch::Off {
             let weights = enumerate_ball(
                 &twist,
                 excitation.target(),

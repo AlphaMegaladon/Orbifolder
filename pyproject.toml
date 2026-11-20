@@ -3,7 +3,7 @@ requires = ["maturin>=1.10,<2"]
 build-backend = "maturin"
 [project]
 name = "orbifolder"
-version = "0.1.0"
+version = "0.2.0"
 requires-python = ">=3.11"
 description = "Exact heterotic orbifold calculations backed by Rust"
 authors = [{ name = "Martin Wimmer" }]

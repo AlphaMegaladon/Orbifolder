@@ -1,0 +1,190 @@
+{
+  "orbifolder": "0.2.0",
+  "platform": "Linux-6.8.0-149-generic-x86_64-with-glibc2.39",
+  "cpu": "AMD Ryzen 7 5700U with Radeon Graphics",
+  "repeats": 120,
+  "wheel_sha256": "56b800cc88b6e2dd6cb841bf48e4eb56df2c5562f3704c2c593190e985ca52b3",
+  "prefix": {
+    "cases": 16,
+    "timeout": [
+      false,
+      false,
+      false
+    ],
+    "timeout_parent": [
+      true,
+      false,
+      true
+    ],
+    "state_budget_aborts": 0,
+    "prepare": {
+      "median_ms": 11.5084115,
+      "p95_ms": 12.94024
+    },
+    "first_lookup": {
+      "median_ms": 0.00539,
+      "p95_ms": 0.008215
+    },
+    "repeated_lookup": {
+      "median_ms": 0.000491,
+      "p95_ms": 0.000882
+    },
+    "z3_cold_fixture_creation": {
+      "median_ms": 145.1760875,
+      "p95_ms": 1135.777782
+    },
+    "baseline_already_cached_python_lookup": {
+      "median_ms": 0.015189,
+      "p95_ms": 0.023134
+    },
+    "natively_prepared_vs_z3_cold_lookup_ratio": 295674.31262729125,
+    "native_first_lookup_vs_z3_cold_ratio": 26934.339053803338,
+    "already_cached_python_vs_native_lookup_ratio": 30.934826883910386
+  },
+  "compact": {
+    "non_susy_tachyonic": {
+      "project": {
+        "median_ms": 0.978027,
+        "p95_ms": 1.157879
+      },
+      "dict": {
+        "median_ms": 0.4448745,
+        "p95_ms": 0.636499
+      },
+      "combined": {
+        "median_ms": 1.691737,
+        "p95_ms": 2.38036
+      },
+      "full_json": {
+        "median_ms": 673.516952,
+        "p95_ms": 817.16953
+      }
+    },
+    "non_susy_z3": {
+      "project": {
+        "median_ms": 0.359062,
+        "p95_ms": 0.519426
+      },
+      "dict": {
+        "median_ms": 0.1456565,
+        "p95_ms": 0.162469
+      },
+      "combined": {
+        "median_ms": 0.604047,
+        "p95_ms": 0.91117
+      },
+      "full_json": {
+        "median_ms": 595.394838,
+        "p95_ms": 633.049715
+      }
+    },
+    "non_susy_z3xz3_wl": {
+      "project": {
+        "median_ms": 2.36179,
+        "p95_ms": 2.880219
+      },
+      "dict": {
+        "median_ms": 0.928949,
+        "p95_ms": 1.705488
+      },
+      "combined": {
+        "median_ms": 4.0613915,
+        "p95_ms": 4.731624
+      },
+      "full_json": {
+        "median_ms": 1744.541904,
+        "p95_ms": 1969.741359
+      }
+    },
+    "non_susy_z6_ii": {
+      "project": {
+        "median_ms": 1.35847,
+        "p95_ms": 1.724324
+      },
+      "dict": {
+        "median_ms": 0.4049845,
+        "p95_ms": 0.441689
+      },
+      "combined": {
+        "median_ms": 2.1991055,
+        "p95_ms": 3.067424
+      },
+      "full_json": {
+        "median_ms": 854.365805,
+        "p95_ms": 941.764021
+      }
+    },
+    "susy_z3": {
+      "project": {
+        "median_ms": 0.224591,
+        "p95_ms": 0.242721
+      },
+      "dict": {
+        "median_ms": 0.0999445,
+        "p95_ms": 0.107604
+      },
+      "combined": {
+        "median_ms": 0.379265,
+        "p95_ms": 0.404909
+      },
+      "full_json": {
+        "median_ms": 374.276081,
+        "p95_ms": 414.864537
+      }
+    },
+    "susy_z3xz3_wl": {
+      "project": {
+        "median_ms": 2.360712,
+        "p95_ms": 3.074037
+      },
+      "dict": {
+        "median_ms": 1.774379,
+        "p95_ms": 2.18061
+      },
+      "combined": {
+        "median_ms": 6.273422,
+        "p95_ms": 8.43218
+      },
+      "full_json": {
+        "median_ms": 751.772827,
+        "p95_ms": 800.11257
+      }
+    },
+    "susy_z6_ii": {
+      "project": {
+        "median_ms": 0.5929355,
+        "p95_ms": 0.666355
+      },
+      "dict": {
+        "median_ms": 0.235367,
+        "p95_ms": 0.251929
+      },
+      "combined": {
+        "median_ms": 1.0480355,
+        "p95_ms": 1.172857
+      },
+      "full_json": {
+        "median_ms": 603.448539,
+        "p95_ms": 674.309464
+      }
+    },
+    "three_family_candidate": {
+      "project": {
+        "median_ms": 2.352547,
+        "p95_ms": 3.1176
+      },
+      "dict": {
+        "median_ms": 1.235316,
+        "p95_ms": 1.789387
+      },
+      "combined": {
+        "median_ms": 4.791884,
+        "p95_ms": 6.428156
+      },
+      "full_json": {
+        "median_ms": 825.3238,
+        "p95_ms": 1078.677832
+      }
+    }
+  }
+}

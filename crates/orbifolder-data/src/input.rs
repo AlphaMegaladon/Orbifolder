@@ -59,9 +59,10 @@ impl<'de> Deserialize<'de> for Exact {
         Ok(Self(r))
     }
 }
-fn vector<const N: usize>(v: &[Exact]) -> Result<Vector<N>, DataError> {
+pub fn exact_vector<const N: usize>(v: &[Exact]) -> Result<Vector<N>, DataError> {
     Vector::from_slice(&v.iter().map(|x| x.0.clone()).collect::<Vec<_>>()).map_err(invalid)
 }
+use exact_vector as vector;
 fn matrix(v: &[Vec<Exact>]) -> Result<Matrix, DataError> {
     Matrix::from_rows(
         v.iter()
@@ -210,7 +211,36 @@ pub struct ModelData {
     #[serde(default)]
     pub rules: Vec<RuleData>,
 }
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PreparedEmbeddingData {
+    schema_version: u32,
+    theory: TheoryData,
+    label: String,
+    lattice: String,
+    shifts: [Vec<Exact>; 3],
+    wilson_lines: [Vec<Exact>; 6],
+    #[serde(default)]
+    torsion: Option<Vec<Vec<Exact>>>,
+    rules: Vec<RuleData>,
+}
+
 impl ModelData {
+    pub fn from_prepared_data(value: Value, geometry: &GeometryData) -> Result<Self, DataError> {
+        let data: PreparedEmbeddingData = serde_json::from_value(value).map_err(invalid)?;
+        Ok(Self {
+            schema_version: data.schema_version,
+            theory: data.theory,
+            label: data.label,
+            lattice: data.lattice,
+            geometry: geometry.clone(),
+            shifts: data.shifts,
+            wilson_lines: data.wilson_lines,
+            torsion: data.torsion,
+            rules: data.rules,
+        })
+    }
     /// Parse embeddings from all complete model blocks; CLI commands outside
     /// the blocks are data only and are never interpreted or executed.
     pub fn parse_legacy_models(
@@ -336,11 +366,21 @@ impl ModelData {
                 ));
             }
         }
-        Ok(ModelRequest {
-            geometry: match shared {
+        self.request_prepared(
+            match shared {
                 Some(g) => g,
                 None => self.geometry.build()?,
             },
+            embedding,
+        )
+    }
+    pub fn request_prepared(
+        &self,
+        geometry: Arc<Geometry>,
+        embedding: EmbeddingSpec,
+    ) -> Result<ModelRequest, DataError> {
+        Ok(ModelRequest {
+            geometry,
             embedding,
             theory: self.theory.into(),
             options: ComputeOptions::default(),

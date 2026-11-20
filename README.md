@@ -80,6 +80,25 @@ profiles are tested separately. A preset does not add unconfigured R rules.
 
 ## Batch scans and legacy catalogs
 
+The 0.2 scan API lets multiple candidates share one prepared geometry:
+
+```python
+geometry = orbifolder.Geometry.from_preset("Z6-II", theory_name="non_susy")
+request = geometry.request(label="candidate", lattice="E8xE8",
+                           shifts=shifts, wilson_lines=wilson_lines)
+options = orbifolder.ComputeOptions()
+row, = orbifolder.Executor(threads=4).compute_compact([request], options=options)
+if row["status"] == "ok":
+    spectrum = row["compact"]  # Exact grouped field data and checks in one basis.
+```
+
+`geometry.build_model(...)` uses the same input to construct a `Model`.
+`geometry.validate_embedding(...)` and `geometry.embedding_profile()` run
+without a spectrum. Opt-in `stop_on_tachyon` and `stop_on_anomaly` can produce
+`filtered` results with unavailable counts. Both options default to false.
+See the [0.2 release plan](docs/04_release_0_2_0_plan.md) for the mask and
+provenance contracts.
+
 ```python
 models = orbifolder.load_legacy_file("my_models.txt", geometry="Z3")
 summaries = geometry.evaluate_batch_summaries(models, threads=4)

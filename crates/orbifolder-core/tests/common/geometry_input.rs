@@ -1,5 +1,5 @@
 //! Legacy text/Q(sqrt(3)) adapter, outside the in-memory core and oracle output.
-use crate::common::root;
+use super::common::root;
 use orbifolder_core::{
     geometry::{DiscreteTorsion, ElementSpec, EmbeddingSpec, GeneratorSpec, GeometrySpec, Limits},
     math_core::{GaugeLattice, Matrix, Rational, RightWeight, TorusVector, Vector},

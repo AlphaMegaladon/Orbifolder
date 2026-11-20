@@ -175,6 +175,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "inventory"
+version = "0.3.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6928282826c822ad91bf1c9a1cb90a30ba1c26770749929b4656cd6be829cd7c"
+dependencies = [
+ "rustversion",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -254,7 +263,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "orbifolder-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "num-bigint",
  "num-integer",
@@ -268,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "orbifolder-data"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "num-bigint",
  "orbifolder-core",
@@ -279,9 +288,10 @@ dependencies = [
 
 [[package]]
 name = "orbifolder-python"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "num-bigint",
+ "num-integer",
  "orbifolder-core",
  "orbifolder-data",
  "pyo3",
@@ -338,6 +348,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab53c047fcd1a1d2a8820fe84f05d6be69e9526be40cb03b73f86b6b03e6d87d"
 dependencies = [
  "indoc",
+ "inventory",
  "libc",
  "memoffset",
  "num-bigint",

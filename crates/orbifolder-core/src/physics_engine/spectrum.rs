@@ -7,7 +7,7 @@ use crate::math_core::{
 use num_bigint::BigInt;
 use std::collections::BTreeMap;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum SusyMultiplet {
     LeftChiral,
     RightChiral,
@@ -19,7 +19,7 @@ pub enum SusyMultiplet {
     LeftModulus,
     RightModulus,
 }
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Particle {
     Gauge,
     ConjugateGauge,
@@ -32,7 +32,7 @@ pub enum Particle {
     Modulus,
     ConjugateModulus,
 }
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Multiplet {
     Susy(SusyMultiplet),
     Particle(Particle),
@@ -118,7 +118,7 @@ impl GaugeBasis {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Representation {
     algebra: Algebra,
     dynkin: Vec<BigInt>,
